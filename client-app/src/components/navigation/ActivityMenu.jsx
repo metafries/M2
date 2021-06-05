@@ -7,6 +7,7 @@ import BookmarkBorderIcon from '@material-ui/icons/BookmarkBorder';
 import Typography from '@material-ui/core/Typography';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import ActivityInputs from '../form/ActivityInputs';
 
 const StyledMenu = withStyles({
@@ -33,6 +34,7 @@ const StyledMenu = withStyles({
 ));
 
 export default function ActivityMenu({
+    submitting,
     handleClose,
     showActivityInputs,
     selectedActivity,
@@ -65,15 +67,19 @@ export default function ActivityMenu({
                 </MenuItem>
                 <MenuItem onClick={() => {
                     handleDeleteActivity(selectedActivity.id);
-                    handleMenuClose();
                 }}>
                     <ListItemIcon style={{ minWidth: '40px' }}>
-                        <DeleteForeverIcon style={{ color: 'whitesmoke' }} />
+                        {
+                            submitting 
+                                ? <CircularProgress size={20} /> 
+                                : <DeleteForeverIcon style={{ color: 'whitesmoke' }} />
+                        }
                     </ListItemIcon>
                     <Typography>Delete</Typography>
                 </MenuItem>
             </StyledMenu>
             <ActivityInputs
+                submitting={submitting}
                 selectedActivity={selectedActivity}
                 open={showActivityInputs}
                 handleClose={handleClose}

@@ -12,6 +12,7 @@ import Container from '@material-ui/core/Container';
 import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
 import FormHelperText from '@material-ui/core/FormHelperText';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const custom = createMuiTheme({
   palette: {
@@ -44,6 +45,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 export default function ActivityInputs({ 
+  submitting,
   selectedActivity, 
   open, 
   handleClose,
@@ -101,15 +103,20 @@ export default function ActivityInputs({
             <CloseIcon />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
-            {selectedActivity ? 'EDIT' : 'CREATE'} ACTIVITY
+            {!submitting && (selectedActivity ? 'EDIT ACTIVITY' : 'CREATE ACTIVITY')} 
           </Typography>
-          <Button size='large' autoFocus onClick={() => {
-            handleSubmit();
-            handleClose('');
-            setActivity({});
-          }}>
-            SUBMIT
-          </Button>
+          {
+            submitting
+              ? <MuiThemeProvider theme={custom}>
+                  <CircularProgress size={24} />
+                </MuiThemeProvider>
+              : <Button size='large' autoFocus onClick={() => {
+                  handleSubmit();
+                  setActivity({});
+                }}>
+                  SUBMIT
+                </Button>
+          }
         </Toolbar>
       </AppBar>
       <Container style={{ marginTop: '55px' }} maxWidth='md'>
@@ -144,6 +151,7 @@ export default function ActivityInputs({
             <FormControl>
               <FormHelperText>Date</FormHelperText>
               <Input
+                type='date'
                 value={activity.hasOwnProperty('date') ? activity.date : initialState.date}
                 name='date'
                 onChange={handleChange}

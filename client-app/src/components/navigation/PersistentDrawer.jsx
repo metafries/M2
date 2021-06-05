@@ -90,6 +90,7 @@ const useStyles = makeStyles((theme) =>
 );
 
 export default function PersistentDrawer({
+    submitting,
     handleClickOpen,
     handleClose,
     showActivityInputs,
@@ -156,6 +157,7 @@ export default function PersistentDrawer({
                 </List>
             </Drawer>
             <ActivityInputs
+                submitting={submitting}
                 selectedActivity={{}}
                 open={showActivityInputs}
                 handleClose={handleClose}

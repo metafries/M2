@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import { grey } from '@material-ui/core/colors';
 import clsx from 'clsx';
@@ -56,6 +56,12 @@ const useStyles = makeStyles((theme) =>
 );
 
 export default function ActivityCards({
+    handleSelectActivity,
+    handleMenuClose,
+    handleMenuClick,
+    selectedActivity,
+    anchorEl,
+    submitting,
     handleClickOpen,
     handleClose,
     showActivityInputs,
@@ -65,26 +71,11 @@ export default function ActivityCards({
     handleDeleteActivity,
 }) {
     const classes = useStyles();
-
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const handleMenuClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-    const handleMenuClose = () => {
-        handleSelectActivity('');
-        setAnchorEl(null);
-    };
-
     const [flags, setFlags] = React.useState({ ...expandIds });
     const handleExpandClick = (id) => {
         flags[id] = !flags[id];
         setFlags({ ...flags });
     };
-
-    const [selectedActivity, setSelectedActivity] = useState();
-    const handleSelectActivity = (id) => {
-        setSelectedActivity(activities.find(x => x.id === id));
-    }  
 
     return (
         <React.Fragment>
@@ -170,6 +161,7 @@ export default function ActivityCards({
                 </Card>
             ))}
             <ActivityMenu
+                submitting={submitting}
                 handleClickOpen={handleClickOpen}
                 handleClose={handleClose}
                 showActivityInputs={showActivityInputs}
