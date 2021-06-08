@@ -18,6 +18,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 import PostAddIcon from '@material-ui/icons/PostAdd';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import ActivityInputs from '../form/ActivityInputs';
+import { useStore } from '../../app/store/config';
+import { observer } from 'mobx-react-lite';
 
 const drawerWidth = '100%';
 const bodyBg = '#1e1e1f';
@@ -89,15 +91,14 @@ const useStyles = makeStyles((theme) =>
     }),
 );
 
-export default function PersistentDrawer({
-    submitting,
-    handleClickOpen,
-    handleClose,
-    showActivityInputs,
-    openPersistentDrawer,
-}) {
+function PersistentDrawer() {    
+    const { appStore, activityStore } = useStore();
+    const { openPersistentDrawer, setOpenPersistentDrawer } = appStore;
+    const { setShowActivityInputs } = activityStore;
+
     const classes = useStyles();
     const theme = useTheme();
+
     return (
         <div className={classes.root}>
             <CssBaseline />
@@ -116,7 +117,7 @@ export default function PersistentDrawer({
                         style={{ color: bodyBg }}
                         aria-label="open drawer"
                         edge="end"
-                        onClick={() => handleClickOpen('persistentDrawer')}
+                        onClick={() => setOpenPersistentDrawer(true)}
                         className={clsx(openPersistentDrawer && classes.hide)}
                     >
                         <MenuIcon style={{ height: '30px', width: 'auto' }} />
@@ -133,7 +134,7 @@ export default function PersistentDrawer({
                 }}
             >
                 <div className={classes.drawerHeader}>
-                    <IconButton onClick={() => handleClose('persistentDrawer')}>
+                    <IconButton onClick={() => setOpenPersistentDrawer(false)}>
                         {
                             theme.direction === 'rtl'
                                 ? <ChevronLeftIcon style={closeDrawerBtn} />
@@ -150,19 +151,16 @@ export default function PersistentDrawer({
                 </List>
                 <Divider style={divider} />
                 <List style={drawerOpts}>
-                    <ListItem onClick={() => handleClickOpen('activityInputs')} button>
+                    <ListItem onClick={() => setShowActivityInputs(true)} button>
                         <ListItemIcon><PostAddIcon style={drawerOpts} /></ListItemIcon>
                         <ListItemText primary='CREATE NEW ACTIVITY' />
                     </ListItem>
                 </List>
             </Drawer>
-            <ActivityInputs
-                submitting={submitting}
-                selectedActivity={{}}
-                open={showActivityInputs}
-                handleClose={handleClose}
-            />
+            <ActivityInputs/>
         </div>
 
     )
 }
+
+export default observer(PersistentDrawer)

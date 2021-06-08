@@ -13,6 +13,8 @@ import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { useStore } from '../../app/store/config';
+import { observer } from 'mobx-react-lite';
 
 const custom = createMuiTheme({
   palette: {
@@ -44,16 +46,19 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function ActivityInputs({ 
-  submitting,
-  selectedActivity, 
-  open, 
-  handleClose,
-  handleCreateOrEditActivity,
-  handleMenuClose,
-}) {
-  const classes = useStyles();
-
+function ActivityInputs() {
+  const { appStore, activityStore } = useStore();
+  const { setOpenPersistentDrawer } = appStore;
+  const { 
+    submitting,
+    updateActivity,
+    createActivity, 
+    setShowActivityInputs, 
+    showActivityInputs: open, 
+    selectedActivity, 
+    handleMenuClose 
+  } = activityStore;
+  
   console.log('selectedActivity:', selectedActivity)
   const initialState = selectedActivity ?? {
     id: '',
@@ -65,15 +70,22 @@ export default function ActivityInputs({
     venue: '',
   }
   const [activity, setActivity] = useState({});
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const finalData = {};
     for (const [k, v] of Object.entries(initialState)) {
       activity.hasOwnProperty(k) ? finalData[k] = activity[k] : finalData[k] = v;
     }
     console.log('handleSubmit:', finalData);
-    handleCreateOrEditActivity(finalData);
     if(selectedActivity && selectedActivity.hasOwnProperty('id')) {
+      await updateActivity(finalData);
+      setShowActivityInputs(false);
       handleMenuClose();
+      setActivity({});
+    } else {
+      await createActivity(finalData);
+      setShowActivityInputs(false);
+      setOpenPersistentDrawer(false);
+      setActivity({});
     }
   }
   const handleChange = event => {
@@ -84,12 +96,14 @@ export default function ActivityInputs({
     console.log('real time change preview of activity object :', activity);
   }, [activity]);
 
+  const classes = useStyles();
+
   return (
     <Dialog 
       fullScreen 
       open={open} 
       onClose={() => {
-        handleClose('activityInputs');
+        setShowActivityInputs(false);
         setActivity({});
       }}
       TransitionComponent={Transition}
@@ -97,13 +111,13 @@ export default function ActivityInputs({
       <AppBar className={classes.appBar}>
         <Toolbar>
           <IconButton edge="start" onClick={() => {
-            handleClose('activityInputs');
+            setShowActivityInputs(false);
             setActivity({});
           }}>
             <CloseIcon />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
-            {!submitting && (selectedActivity ? 'EDIT ACTIVITY' : 'CREATE ACTIVITY')} 
+            {selectedActivity ? 'EDIT ACTIVITY' : 'CREATE ACTIVITY'} 
           </Typography>
           {
             submitting
@@ -112,7 +126,6 @@ export default function ActivityInputs({
                 </MuiThemeProvider>
               : <Button size='large' autoFocus onClick={() => {
                   handleSubmit();
-                  setActivity({});
                 }}>
                   SUBMIT
                 </Button>
@@ -179,3 +192,5 @@ export default function ActivityInputs({
     </Dialog>
   );
 }
+
+export default observer(ActivityInputs)

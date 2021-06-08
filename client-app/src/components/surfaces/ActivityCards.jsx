@@ -20,6 +20,8 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import GradeIcon from '@material-ui/icons/Grade';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ActivityMenu from '../navigation/ActivityMenu';
+import { useStore } from '../../app/store/config';
+import { observer } from 'mobx-react-lite';
 
 const active = '#987000';
 const inactive = '#a9a9a9';
@@ -55,31 +57,26 @@ const useStyles = makeStyles((theme) =>
     }),
 );
 
-export default function ActivityCards({
-    handleSelectActivity,
-    handleMenuClose,
-    handleMenuClick,
-    selectedActivity,
-    anchorEl,
-    submitting,
-    handleClickOpen,
-    handleClose,
-    showActivityInputs,
-    expandIds,
-    activities,
-    handleCreateOrEditActivity,
-    handleDeleteActivity,
-}) {
-    const classes = useStyles();
+function ActivityCards() {
+    const { activityStore } = useStore();
+    const { 
+        activitiesByDate, 
+        expandIds, 
+        handleMenuClick, 
+        handleSelectActivity 
+    } = activityStore;
+
     const [flags, setFlags] = React.useState({ ...expandIds });
     const handleExpandClick = (id) => {
         flags[id] = !flags[id];
         setFlags({ ...flags });
     };
 
+    const classes = useStyles();
+
     return (
         <React.Fragment>
-            {activities && activities.map(activity => (
+            {activitiesByDate && activitiesByDate.map(activity => (
                 <Card className={classes.root} key={activity.id}>
                     <CardHeader
                         avatar={
@@ -160,17 +157,9 @@ export default function ActivityCards({
                     </Collapse>
                 </Card>
             ))}
-            <ActivityMenu
-                submitting={submitting}
-                handleClickOpen={handleClickOpen}
-                handleClose={handleClose}
-                showActivityInputs={showActivityInputs}
-                selectedActivity={selectedActivity}
-                anchorEl={anchorEl}
-                handleMenuClose={handleMenuClose}
-                handleCreateOrEditActivity={handleCreateOrEditActivity}
-                handleDeleteActivity={handleDeleteActivity}
-            />
+            <ActivityMenu/>
         </React.Fragment>
     );
 }
+
+export default observer(ActivityCards)
