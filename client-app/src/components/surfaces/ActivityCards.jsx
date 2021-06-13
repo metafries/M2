@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import { grey } from '@material-ui/core/colors';
 import clsx from 'clsx';
@@ -19,9 +19,11 @@ import ChatIcon from '@material-ui/icons/Chat';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import GradeIcon from '@material-ui/icons/Grade';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import ActivityMenu from '../navigation/ActivityMenu';
 import { useStore } from '../../app/store/config';
 import { observer } from 'mobx-react-lite';
+import { useHistory } from 'react-router-dom';
 
 const active = '#987000';
 const inactive = '#a9a9a9';
@@ -57,14 +59,28 @@ const useStyles = makeStyles((theme) =>
     }),
 );
 
+const useProgressStyles = makeStyles((theme) => ({
+    root: {
+      marginBottom: theme.spacing(2),
+      marginTop: theme.spacing(2),
+    },
+}));  
+
 function ActivityCards() {
     const { activityStore } = useStore();
     const { 
+        activityRegistry,
+        loadActivities,
+        loading,
         activitiesByDate, 
         expandIds, 
         handleMenuClick, 
         handleSelectActivity 
     } = activityStore;
+
+    useEffect(() => {
+        if (activityRegistry.size <= 1) loadActivities();
+    }, [activityRegistry.size, loadActivities])    
 
     const [flags, setFlags] = React.useState({ ...expandIds });
     const handleExpandClick = (id) => {
@@ -72,7 +88,16 @@ function ActivityCards() {
         setFlags({ ...flags });
     };
 
+    const history = useHistory();
+
+    const handleChatRoute = id => {
+        history.push(`/chat/${id}`);
+    }
+
     const classes = useStyles();
+    const progressClasses = useProgressStyles();
+
+    if (loading) return <LinearProgress className={progressClasses.root} />
 
     return (
         <React.Fragment>
@@ -87,7 +112,10 @@ function ActivityCards() {
                         action={
                             <IconButton
                                 style={{ color: actions }}
-                                onClick={(e) => { handleMenuClick(e); handleSelectActivity(activity.id) }}
+                                onClick={(e) => { 
+                                    handleMenuClick(e); 
+                                    handleSelectActivity(activity.id) 
+                                }}
                                 aria-label="settings"
                             >
                                 <MoreVertIcon />
@@ -130,7 +158,14 @@ function ActivityCards() {
                         <IconButton style={{ color: inactive }} aria-label="going">
                             <CheckCircleIcon />
                         </IconButton>
-                        <IconButton style={{ color: active }} aria-label="chat">
+                        <IconButton 
+                            onClick={(e) => { 
+                                handleSelectActivity(activity.id); 
+                                handleChatRoute(activity.id) 
+                            }}
+                            style={{ color: active }} 
+                            aria-label="chat"
+                        >
                             <ChatIcon />
                         </IconButton>
                         <IconButton style={{ color: active }} aria-label="share">

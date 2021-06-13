@@ -15,6 +15,9 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { useStore } from '../../app/store/config';
 import { observer } from 'mobx-react-lite';
+import { Link, useParams, useHistory } from 'react-router-dom';
+import { LinearProgress } from '@material-ui/core';
+import { v4 as uuidv4 } from 'uuid';
 
 const custom = createMuiTheme({
   palette: {
@@ -50,17 +53,19 @@ function ActivityInputs() {
   const { appStore, activityStore } = useStore();
   const { setOpenPersistentDrawer } = appStore;
   const { 
+    loading,
+    loadActivity,
     submitting,
     updateActivity,
     createActivity, 
-    setShowActivityInputs, 
-    showActivityInputs: open, 
-    selectedActivity, 
     handleMenuClose 
   } = activityStore;
   
-  console.log('selectedActivity:', selectedActivity)
-  const initialState = selectedActivity ?? {
+  const { id } = useParams();
+  const history = useHistory();
+  console.log('history:', history)
+
+  const [activity, setActivity] = useState({
     id: '',
     title: '',
     category: '',
@@ -68,24 +73,33 @@ function ActivityInputs() {
     date: '',
     city: '',
     venue: '',
-  }
-  const [activity, setActivity] = useState({});
-  const handleSubmit = async () => {
-    const finalData = {};
-    for (const [k, v] of Object.entries(initialState)) {
-      activity.hasOwnProperty(k) ? finalData[k] = activity[k] : finalData[k] = v;
-    }
-    console.log('handleSubmit:', finalData);
-    if(selectedActivity && selectedActivity.hasOwnProperty('id')) {
-      await updateActivity(finalData);
-      setShowActivityInputs(false);
-      handleMenuClose();
-      setActivity({});
+  });
+  const [closeRoute, setCloseRoute] = useState('/');
+
+  useEffect(() => {
+    if (id) {
+      setCloseRoute(`/activities/${id}`);
+      loadActivity(id).then(activity => {
+        setActivity(activity);
+      })
     } else {
-      await createActivity(finalData);
-      setShowActivityInputs(false);
+      setCloseRoute('/activities');
+    }
+  },[id, loadActivity]);
+
+  const handleSubmit = async () => {
+    if(activity.id.length !== 0) {
+      await updateActivity(activity);
+      handleMenuClose();
+      history.push(`/activities/${activity.id}`)
+    } else {
+      const newActivity = {
+        ...activity,
+        id: uuidv4(),
+      }
+      await createActivity(newActivity);
       setOpenPersistentDrawer(false);
-      setActivity({});
+      history.push(`/activities/${newActivity.id}`);
     }
   }
   const handleChange = event => {
@@ -98,47 +112,54 @@ function ActivityInputs() {
 
   const classes = useStyles();
 
+  if (loading) return <LinearProgress/>
+
   return (
     <Dialog 
       fullScreen 
-      open={open} 
-      onClose={() => {
-        setShowActivityInputs(false);
-        setActivity({});
-      }}
+      open={true} 
+      onClose={() => {}}
       TransitionComponent={Transition}
     >
       <AppBar className={classes.appBar}>
         <Toolbar>
-          <IconButton edge="start" onClick={() => {
-            setShowActivityInputs(false);
-            setActivity({});
-          }}>
+          <IconButton 
+            component={Link}
+            to={closeRoute}
+            edge="start" 
+            onClick={() => {
+              setOpenPersistentDrawer(false);
+              handleMenuClose();
+            }}
+          >
             <CloseIcon />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
-            {selectedActivity ? 'EDIT ACTIVITY' : 'CREATE ACTIVITY'} 
+            {activity.id.length !== 0 ? 'EDIT ACTIVITY' : 'CREATE ACTIVITY'} 
           </Typography>
           {
             submitting
               ? <MuiThemeProvider theme={custom}>
                   <CircularProgress size={24} />
                 </MuiThemeProvider>
-              : <Button size='large' autoFocus onClick={() => {
-                  handleSubmit();
-                }}>
+              : <Button 
+                  size='large' 
+                  onClick={() => {
+                    handleSubmit();
+                  }}
+                >
                   SUBMIT
                 </Button>
           }
         </Toolbar>
       </AppBar>
-      <Container style={{ marginTop: '55px' }} maxWidth='md'>
+      <Container style={{ marginTop: '55px' }} maxWidth='sm'>
         <form className={classes.root} autoComplete='off'>
           <MuiThemeProvider theme={custom}>
             <FormControl>
               <FormHelperText>Title</FormHelperText>
               <Input
-                value={activity.hasOwnProperty('title') ? activity.title : initialState.title}
+                value={activity.title}
                 name='title'
                 onChange={handleChange}
               />
@@ -146,7 +167,7 @@ function ActivityInputs() {
             <FormControl>
               <FormHelperText>Description</FormHelperText>
               <Input
-                value={activity.hasOwnProperty('description') ? activity.description : initialState.description}
+                value={activity.description}
                 name='description'
                 onChange={handleChange}
                 multiline={true}
@@ -156,7 +177,7 @@ function ActivityInputs() {
             <FormControl>
               <FormHelperText>Category</FormHelperText>
               <Input
-                value={activity.hasOwnProperty('category') ? activity.category : initialState.category}
+                value={activity.category}
                 name='category'
                 onChange={handleChange}
               />
@@ -165,7 +186,7 @@ function ActivityInputs() {
               <FormHelperText>Date</FormHelperText>
               <Input
                 type='date'
-                value={activity.hasOwnProperty('date') ? activity.date : initialState.date}
+                value={activity.date}
                 name='date'
                 onChange={handleChange}
               />
@@ -173,7 +194,7 @@ function ActivityInputs() {
             <FormControl>
               <FormHelperText>City</FormHelperText>
               <Input
-                value={activity.hasOwnProperty('city') ? activity.city : initialState.city}
+                value={activity.city}
                 name='city'
                 onChange={handleChange}
               />
@@ -181,7 +202,7 @@ function ActivityInputs() {
             <FormControl>
               <FormHelperText>Venue</FormHelperText>
               <Input
-                value={activity.hasOwnProperty('venue') ? activity.venue : initialState.venue}
+                value={activity.venue}
                 name='venue'
                 onChange={handleChange}
               />

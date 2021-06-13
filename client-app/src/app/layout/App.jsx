@@ -1,20 +1,16 @@
-import React, { useEffect } from 'react';
-import { makeStyles, MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
+import React from 'react';
+import { Route } from 'react-router-dom';
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Container from '@material-ui/core/Container';
-import LinearProgress from '@material-ui/core/LinearProgress';
 import grey from '@material-ui/core/colors/grey';
 import PersistentDrawer from '../../components/navigation/PersistentDrawer';
 import ActivityCards from '../../components/surfaces/ActivityCards';
-import { useStore } from '../store/config';
 import { observer } from 'mobx-react-lite';
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    marginBottom: theme.spacing(2),
-    marginTop: theme.spacing(2),
-  },
-}));
+import Home from '../../components/surfaces/Home';
+import ActivityChat from '../../components/surfaces/ActivityChat';
+import ActivityInputs from '../../components/form/ActivityInputs';
+import ActivityDetails from '../../components/surfaces/ActivityDetails';
 
 const custom = createMuiTheme({
   palette: {
@@ -34,26 +30,24 @@ const custom = createMuiTheme({
 });
 
 function App() {
-  const { activityStore } = useStore();
-  const { loading } = activityStore;
-
-  useEffect(() => {
-    activityStore.loadActivities();
-  }, [activityStore])
-
-  const classes = useStyles();
-
   return (
     <MuiThemeProvider theme={custom}>
       <CssBaseline />
-      <PersistentDrawer/>
-      <Container style={{ marginTop: '100px' }} maxWidth='sm'>
-        {
-          loading
-            ? <LinearProgress className={classes.root} />
-            : <ActivityCards/>
-        }
-      </Container>
+      <Route exact path='/' component={Home} />
+      <Route
+        path={'/(.+)'}
+        render={() => (
+          <React.Fragment>
+            <PersistentDrawer />
+            <Container style={{ marginTop: '100px' }} maxWidth='sm'>
+              <Route exact path='/activities' component={ActivityCards} />
+              <Route path={['/create', '/edit/:id']} component={ActivityInputs} />
+              <Route path='/activities/:id' component={ActivityDetails} />
+              <Route path='/chat/:id' component={ActivityChat}/>
+            </Container>
+          </React.Fragment>
+        )}
+      />
     </MuiThemeProvider>
   );
 }

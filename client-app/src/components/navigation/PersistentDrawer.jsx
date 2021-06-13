@@ -17,9 +17,9 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import PostAddIcon from '@material-ui/icons/PostAdd';
 import ViewListIcon from '@material-ui/icons/ViewList';
-import ActivityInputs from '../form/ActivityInputs';
 import { useStore } from '../../app/store/config';
 import { observer } from 'mobx-react-lite';
+import { Link } from 'react-router-dom';
 
 const drawerWidth = '100%';
 const bodyBg = '#1e1e1f';
@@ -92,9 +92,8 @@ const useStyles = makeStyles((theme) =>
 );
 
 function PersistentDrawer() {    
-    const { appStore, activityStore } = useStore();
+    const { appStore } = useStore();
     const { openPersistentDrawer, setOpenPersistentDrawer } = appStore;
-    const { setShowActivityInputs } = activityStore;
 
     const classes = useStyles();
     const theme = useTheme();
@@ -109,7 +108,13 @@ function PersistentDrawer() {
                 })}
             >
                 <Toolbar>
-                    <Typography variant="h6" noWrap className={classes.title}>
+                    <Typography 
+                        component={Link} 
+                        to='/' 
+                        variant="h6" 
+                        noWrap 
+                        className={classes.title}
+                    >
                         <img alt='icon' style={logo} src='/assets/logoIcon.png' />
                         <img alt='metaFries' style={logo} src='/assets/logoText.png' />
                     </Typography>
@@ -144,20 +149,29 @@ function PersistentDrawer() {
                 </div>
                 <Divider style={divider} />
                 <List style={drawerOpts}>
-                    <ListItem button>
+                    <ListItem 
+                        button 
+                        onClick={() => setOpenPersistentDrawer(false)}
+                        component={Link} 
+                        to='/activities'
+                    >
                         <ListItemIcon><ViewListIcon style={drawerOpts} /></ListItemIcon>
                         <ListItemText primary='DISCOVER ACTIVITIES' />
                     </ListItem>
                 </List>
                 <Divider style={divider} />
                 <List style={drawerOpts}>
-                    <ListItem onClick={() => setShowActivityInputs(true)} button>
+                    <ListItem 
+                        component={Link}
+                        to='/create'
+                        onClick={() => {}}
+                        button
+                    >
                         <ListItemIcon><PostAddIcon style={drawerOpts} /></ListItemIcon>
                         <ListItemText primary='CREATE NEW ACTIVITY' />
                     </ListItem>
                 </List>
             </Drawer>
-            <ActivityInputs/>
         </div>
 
     )

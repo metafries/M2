@@ -8,9 +8,9 @@ import Typography from '@material-ui/core/Typography';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import ActivityInputs from '../form/ActivityInputs';
 import { useStore } from '../../app/store/config';
 import { observer } from 'mobx-react-lite';
+import { Link, useHistory } from 'react-router-dom';
 
 const StyledMenu = withStyles({
     paper: {
@@ -42,11 +42,17 @@ function ActivityMenu({
     const { 
         submitting,
         deleteActivity,
-        setShowActivityInputs, 
         selectedActivity, 
         anchorEl, 
         handleMenuClose 
     } = activityStore;
+
+    const history = useHistory();
+
+    handleDeleteActivity = async id => {
+        await deleteActivity(selectedActivity.id);
+        history.push('/activities');
+    }
 
     return (
         <React.Fragment>
@@ -57,20 +63,24 @@ function ActivityMenu({
                 open={Boolean(anchorEl)}
                 onClose={handleMenuClose}
             >
-                <MenuItem onClick={() => setShowActivityInputs(true)}>
+                <MenuItem onClick={() => {}}>
                     <ListItemIcon style={{ minWidth: '40px' }}>
                         <BookmarkBorderIcon style={{ color: 'whitesmoke' }} />
                     </ListItemIcon>
                     <Typography>Save</Typography>
                 </MenuItem>
-                <MenuItem onClick={() => { setShowActivityInputs(true) }}>
+                <MenuItem 
+                    component={Link} 
+                    to = {selectedActivity && `/edit/${selectedActivity.id}`}
+                    onClick={() => {}}
+                >
                     <ListItemIcon style={{ minWidth: '40px' }}>
                         <EditIcon style={{ color: 'whitesmoke' }} />
                     </ListItemIcon>
                     <Typography>Edit</Typography>
                 </MenuItem>
                 <MenuItem onClick={() => {
-                    deleteActivity(selectedActivity.id);
+                    handleDeleteActivity(selectedActivity.id)
                 }}>
                     <ListItemIcon style={{ minWidth: '40px' }}>
                         {
@@ -82,7 +92,6 @@ function ActivityMenu({
                     <Typography>Delete</Typography>
                 </MenuItem>
             </StyledMenu>
-            <ActivityInputs/>
         </React.Fragment>
     )
 }

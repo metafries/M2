@@ -1,5 +1,4 @@
 import { makeAutoObservable, runInAction } from "mobx";
-import { v4 as uuidv4 } from 'uuid';
 import agent from "../api/agent";
 
 
@@ -9,7 +8,6 @@ export default class Activity {
     expandIds = {};
     selectedActivity = undefined;
     anchorEl = null;
-    showActivityInputs = false;
     submitting = false;
 
     constructor() {
@@ -26,9 +24,10 @@ export default class Activity {
         try {
             const data = await agent.Activities.list();
             data.forEach(activity => {
-                activity.date = activity.date.split('T')[0];
-                this.activityRegistry.set(activity.id, activity);
-                this.expandIds[activity.id] = false;
+                this.processData(activity); 
+                runInAction(() => {
+                    this.expandIds[activity.id] = false;
+                })
             });
             this.setLoading(false);
         } catch(error) {
@@ -37,16 +36,43 @@ export default class Activity {
         }
     }
 
+    loadActivity = async id => {
+        let activity = this.getActivity(id);
+        if (activity) {
+            this.selectedActivity = activity;
+            return activity;
+        } else {
+            this.setLoading(true);
+            try {
+                activity = await agent.Activities.details(id);
+                this.processData(activity);
+                runInAction(() => {
+                    this.selectedActivity = activity;
+                })
+                this.setLoading(false);
+                return activity;
+            } catch (error) {
+                console.log(error);
+                this.setLoading(false);
+            }
+        }
+    }
+
+    processData = activity => {
+        activity.date = activity.date.split('T')[0];
+        this.activityRegistry.set(activity.id, activity);
+    }
+
+    getActivity = id => {
+        return this.activityRegistry.get(id);
+    }
+
     setLoading = state => {
         this.loading = state;
     }
-    setShowActivityInputs = state => {
-        this.showActivityInputs = state;
-    }
-
+    
     createActivity = async activity => {
         this.submitting = true;
-        activity.id = uuidv4();
         try {
             await agent.Activities.create(activity);
             runInAction(() => {
@@ -69,7 +95,6 @@ export default class Activity {
     }
     handleMenuClose = () => {
         this.anchorEl = null;
-        this.handleSelectActivity('');
     }
 
     updateActivity = async activity => {
