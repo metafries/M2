@@ -20,12 +20,15 @@ import ViewListIcon from '@material-ui/icons/ViewList';
 import { useStore } from '../../app/store/config';
 import { observer } from 'mobx-react-lite';
 import { Link } from 'react-router-dom';
+import SearchIcon from '@material-ui/icons/Search';
+import ActivitySearch from '../form/ActivitySearch';
 
 const drawerWidth = '100%';
 const bodyBg = '#1e1e1f';
 const appBarBg = '#ffff00';
 
 const logo = { height: '25px', width: 'auto' };
+const tool = { fontSize: 30 };
 const closeDrawerBtn = { color: appBarBg, fontSize: 35 };
 const drawerOpts = { color: appBarBg };
 const divider = { height: '3px' };
@@ -33,6 +36,10 @@ const divider = { height: '3px' };
 const useStyles = makeStyles((theme) =>
     createStyles({
         root: {
+            marginBottom: '76px',
+            '@media (min-width: 600px)': {
+                marginBottom: '84px',
+            },
             display: 'flex',
         },
         appBar: {
@@ -91,9 +98,10 @@ const useStyles = makeStyles((theme) =>
     }),
 );
 
-function PersistentDrawer() {    
-    const { appStore } = useStore();
+function PersistentDrawer() {
+    const { appStore, activityStore } = useStore();
     const { openPersistentDrawer, setOpenPersistentDrawer } = appStore;
+    const { setOpenActivitySearch } = activityStore;
 
     const classes = useStyles();
     const theme = useTheme();
@@ -108,16 +116,27 @@ function PersistentDrawer() {
                 })}
             >
                 <Toolbar>
-                    <Typography 
-                        component={Link} 
-                        to='/' 
-                        variant="h6" 
-                        noWrap 
+                    <Typography
+                        variant="h6"
+                        noWrap
                         className={classes.title}
                     >
-                        <img alt='icon' style={logo} src='/assets/logoIcon.png' />
-                        <img alt='metaFries' style={logo} src='/assets/logoText.png' />
+                        <IconButton 
+                            component={Link}
+                            to='/'
+                            style={{ padding: 0 }}
+                        >
+                            <img alt='icon' style={logo} src='/assets/logoIcon.png' />
+                            <img alt='metaFries' style={logo} src='/assets/logoText.png' />
+                        </IconButton>
                     </Typography>
+                    <IconButton 
+                        onClick={() => setOpenActivitySearch(true)}
+                        style={{ color: bodyBg }}
+                    >
+                        <SearchIcon style={tool} />
+                    </IconButton>
+                    <ActivitySearch/>
                     <IconButton
                         style={{ color: bodyBg }}
                         aria-label="open drawer"
@@ -125,7 +144,7 @@ function PersistentDrawer() {
                         onClick={() => setOpenPersistentDrawer(true)}
                         className={clsx(openPersistentDrawer && classes.hide)}
                     >
-                        <MenuIcon style={{ height: '30px', width: 'auto' }} />
+                        <MenuIcon style={tool} />
                     </IconButton>
                 </Toolbar>
             </AppBar>

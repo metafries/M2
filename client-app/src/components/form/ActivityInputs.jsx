@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { MuiThemeProvider, createMuiTheme, makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import AppBar from '@material-ui/core/AppBar';
@@ -18,14 +18,6 @@ import { observer } from 'mobx-react-lite';
 import { Link, useParams, useHistory } from 'react-router-dom';
 import { LinearProgress } from '@material-ui/core';
 import { v4 as uuidv4 } from 'uuid';
-
-const custom = createMuiTheme({
-  palette: {
-    primary: {
-      main: '#000000de',
-    },
-  },
-});
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -139,9 +131,7 @@ function ActivityInputs() {
           </Typography>
           {
             submitting
-              ? <MuiThemeProvider theme={custom}>
-                  <CircularProgress size={24} />
-                </MuiThemeProvider>
+              ? <CircularProgress size={24} />
               : <Button 
                   size='large' 
                   onClick={() => {
@@ -155,7 +145,6 @@ function ActivityInputs() {
       </AppBar>
       <Container style={{ marginTop: '55px' }} maxWidth='sm'>
         <form className={classes.root} autoComplete='off'>
-          <MuiThemeProvider theme={custom}>
             <FormControl>
               <FormHelperText>Title</FormHelperText>
               <Input
@@ -207,7 +196,6 @@ function ActivityInputs() {
                 onChange={handleChange}
               />
             </FormControl>
-          </MuiThemeProvider>
         </form>
       </Container>
     </Dialog>

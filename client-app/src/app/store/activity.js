@@ -3,6 +3,8 @@ import agent from "../api/agent";
 
 
 export default class Activity {
+    openActivitySearch = false;
+    openActivityClout = false;
     loading = false;
     activityRegistry = new Map();
     expandIds = {};
@@ -14,9 +16,25 @@ export default class Activity {
         makeAutoObservable(this);
     }
 
+    setOpenActivitySearch = state => {
+        this.openActivitySearch = state;
+    }
+
+    setOpenActivityClout = state => {
+        this.openActivityClout = state;
+    }
+
     get activitiesByDate() {
         return Array.from(this.activityRegistry.values()).sort((a, b) => 
             Date.parse(a.date) - Date.parse(b.date))
+    }
+
+    get groupedActivities() {
+        return Object.entries(this.activitiesByDate.reduce((activities, activity) => {
+            const date = activity.date;
+            activities[date] = activities[date] ? [...activities[date], activity] : [activity];
+            return activities;
+        }, {}))
     }
 
     loadActivities = async () => {
@@ -26,6 +44,7 @@ export default class Activity {
             data.forEach(activity => {
                 this.processData(activity); 
                 runInAction(() => {
+                    this.activityRegistry.set(activity.id, activity);
                     this.expandIds[activity.id] = false;
                 })
             });
@@ -60,7 +79,6 @@ export default class Activity {
 
     processData = activity => {
         activity.date = activity.date.split('T')[0];
-        this.activityRegistry.set(activity.id, activity);
     }
 
     getActivity = id => {
@@ -88,7 +106,9 @@ export default class Activity {
     }
 
     handleSelectActivity = id => {
-        this.selectedActivity = this.activityRegistry.get(id);
+        if (this.activityRegistry.size !== 0) {
+            this.selectedActivity = this.activityRegistry.get(id);
+        }
     }
     handleMenuClick = e => {
         this.anchorEl = e.currentTarget;
