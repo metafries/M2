@@ -22,6 +22,7 @@ import { observer } from 'mobx-react-lite';
 import { Link } from 'react-router-dom';
 import SearchIcon from '@material-ui/icons/Search';
 import ActivitySearch from '../form/ActivitySearch';
+import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 
 const drawerWidth = '100%';
 const bodyBg = '#1e1e1f';
@@ -188,6 +189,18 @@ function PersistentDrawer() {
                     >
                         <ListItemIcon><PostAddIcon style={drawerOpts} /></ListItemIcon>
                         <ListItemText primary='CREATE NEW ACTIVITY' />
+                    </ListItem>
+                </List>
+                <Divider style={divider} />
+                <List style={drawerOpts}>
+                    <ListItem 
+                        component={Link}
+                        to='/test/errors'
+                        onClick={() => setOpenPersistentDrawer(false)}
+                        button
+                    >
+                        <ListItemIcon><ErrorOutlineIcon style={drawerOpts} /></ListItemIcon>
+                        <ListItemText primary='BUG REPORT' />
                     </ListItem>
                 </List>
             </Drawer>

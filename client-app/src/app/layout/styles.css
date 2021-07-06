@@ -1,5 +1,32 @@
 @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200;300;400;500;600;700&display=swap');
 
+@font-face {
+  font-family: Oswald;
+  src: url(https://fonts.googleapis.com/css2?family=Oswald:wght@200;300;400;500;600;700&display=swap);
+}
+
 body {
   background-color: #323232 !important;
+}
+
+.Toastify__toast {
+  border: 2px solid rgba(0, 0, 0, 0.2) !important;
+  min-height: auto;
+  border-radius: 0%;
+}
+
+.Toastify__toast--error {
+  background: #fc4000d9;
+}
+
+.Toastify__toast-body {
+  margin: 0;
+  color: #323232;
+  font-size: 1rem;
+  font-family: Oswald;
+}
+
+.Toastify__progress-bar {
+  height: 4px;
+  background: #afadaad9 !important;
 }
