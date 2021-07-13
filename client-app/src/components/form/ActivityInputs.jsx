@@ -9,15 +9,19 @@ import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import Slide from '@material-ui/core/Slide';
 import Container from '@material-ui/core/Container';
-import FormControl from '@material-ui/core/FormControl';
-import Input from '@material-ui/core/Input';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { useStore } from '../../app/store/config';
 import { observer } from 'mobx-react-lite';
 import { Link, useParams, useHistory } from 'react-router-dom';
 import { LinearProgress } from '@material-ui/core';
 import { v4 as uuidv4 } from 'uuid';
+import { Formik, Form } from 'formik';
+import * as yup from 'yup';
+import FormikTextInput from '../utils/FormikTextInput';
+import FormikTextArea from '../utils/FormikTextArea';
+import FormikSelector from '../utils/FormikSelector';
+import { categoryOpts } from '../../app/common/categoryOpts';
+import FormikDateTimePicker from '../utils/FormikDateTimePicker';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -62,7 +66,7 @@ function ActivityInputs() {
     title: '',
     category: '',
     description: '',
-    date: '',
+    date: new Date(),
     city: '',
     venue: '',
   });
@@ -79,8 +83,18 @@ function ActivityInputs() {
     }
   },[id, loadActivity]);
 
-  const handleSubmit = async () => {
-    if(activity.id.length !== 0) {
+  let schema = yup.object().shape({
+    title: yup.string().required(),
+    description: yup.string().required(),
+    category: yup.string().required(),
+    date: yup.date().min(new Date(), "start date can't be before current time"),
+    // endDate: yup.date().min(yup.ref('date'), "end date can't be before start date"),
+    city: yup.string().required(),
+    venue: yup.string().required(),
+  })
+
+  const handleFormSubmit = async (activity) => {
+    if (activity.id.length !== 0) {
       await updateActivity(activity);
       handleMenuClose();
       history.push(`/activities/${activity.id}`)
@@ -94,10 +108,6 @@ function ActivityInputs() {
       history.push(`/activities/${newActivity.id}`);
     }
   }
-  const handleChange = event => {
-    const { name, value } = event.target;
-    setActivity({ ...activity, [name]: value });
-  };
   useEffect(() => {
     console.log('real time change preview of activity object :', activity);
   }, [activity]);
@@ -107,98 +117,62 @@ function ActivityInputs() {
   if (loading) return <LinearProgress/>
 
   return (
-    <Dialog 
-      fullScreen 
-      open={true} 
-      onClose={() => {}}
-      TransitionComponent={Transition}
+    <Formik
+      validationSchema={schema}
+      enableReinitialize
+      initialValues={activity}
+      onSubmit={values => handleFormSubmit(values)}
     >
-      <AppBar className={classes.appBar}>
-        <Toolbar>
-          <IconButton 
-            component={Link}
-            to={closeRoute}
-            edge="start" 
-            onClick={() => {
-              setOpenPersistentDrawer(false);
-              handleMenuClose();
-            }}
-          >
-            <CloseIcon />
-          </IconButton>
-          <Typography variant="h6" className={classes.title}>
-            {activity.id.length !== 0 ? 'EDIT ACTIVITY' : 'CREATE ACTIVITY'} 
-          </Typography>
-          {
-            submitting
-              ? <CircularProgress size={24} />
-              : <Button 
-                  size='large' 
-                  onClick={() => {
-                    handleSubmit();
-                  }}
-                >
-                  SUBMIT
-                </Button>
-          }
-        </Toolbar>
-      </AppBar>
-      <Container style={{ marginTop: '55px' }} maxWidth='sm'>
-        <form className={classes.root} autoComplete='off'>
-            <FormControl>
-              <FormHelperText>Title</FormHelperText>
-              <Input
-                value={activity.title}
-                name='title'
-                onChange={handleChange}
-              />
-            </FormControl>
-            <FormControl>
-              <FormHelperText>Description</FormHelperText>
-              <Input
-                value={activity.description}
-                name='description'
-                onChange={handleChange}
-                multiline={true}
-                rowsMax={4}
-              />
-            </FormControl>
-            <FormControl>
-              <FormHelperText>Category</FormHelperText>
-              <Input
-                value={activity.category}
-                name='category'
-                onChange={handleChange}
-              />
-            </FormControl>
-            <FormControl>
-              <FormHelperText>Date</FormHelperText>
-              <Input
-                type='date'
-                value={activity.date}
-                name='date'
-                onChange={handleChange}
-              />
-            </FormControl>
-            <FormControl>
-              <FormHelperText>City</FormHelperText>
-              <Input
-                value={activity.city}
-                name='city'
-                onChange={handleChange}
-              />
-            </FormControl>
-            <FormControl>
-              <FormHelperText>Venue</FormHelperText>
-              <Input
-                value={activity.venue}
-                name='venue'
-                onChange={handleChange}
-              />
-            </FormControl>
-        </form>
-      </Container>
-    </Dialog>
+      {({ handleSubmit, dirty }) => (
+        <Dialog
+          fullScreen
+          open={true}
+          onClose={() => { }}
+          TransitionComponent={Transition}
+        >
+          <AppBar className={classes.appBar}>
+            <Toolbar>
+              <IconButton
+                component={Link}
+                to={closeRoute}
+                edge="start"
+                onClick={() => {
+                  setOpenPersistentDrawer(false);
+                  handleMenuClose();
+                }}
+              >
+                <CloseIcon />
+              </IconButton>
+              <Typography variant="h6" className={classes.title}>
+                {activity.id.length !== 0 ? 'EDIT ACTIVITY' : 'CREATE ACTIVITY'}
+              </Typography>
+              {
+                submitting
+                  ? <CircularProgress size={24} />
+                  : <Button
+                      disabled={!dirty}
+                      size='large'
+                      onClick={() => handleSubmit()}
+                    > 
+                      SUBMIT
+                    </Button>
+              }
+            </Toolbar>
+          </AppBar>
+          <Container style={{ marginTop: '55px' }} maxWidth='sm'>
+            <Form className={classes.root} autoComplete='off'>
+              <FormikTextInput name='title' label='Title' />
+              <FormikTextArea name='description' label='Description' rowsMax={4} />
+              <FormikSelector name='category' label='Category' opts={categoryOpts} />
+              <FormikDateTimePicker name='date' label='Start Date' />
+              {/* <FormikDateTimePicker name='endDate' label='End Date' /> */}
+              <FormikTextInput name='city' label='City' />
+              <FormikTextInput name='venue' label='Venue' />
+            </Form>
+          </Container>
+        </Dialog>
+      )}
+    </Formik>
   );
 }
 

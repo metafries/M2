@@ -8,13 +8,14 @@ import IconButton from '@material-ui/core/IconButton';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { useStore } from '../../app/store/config';
 import { observer } from 'mobx-react-lite';
-import ActivityTags from '../utils/ActivityTags';
-import ActivityHeader from '../utils/ActivityHeader';
+import ActivityTags from '../common/ActivityTags';
+import ActivityHeader from '../common/ActivityHeader';
 import Typography from '@material-ui/core/Typography';
-import ActivityActions from '../utils/ActivityActions';
-import ActivityDesc from '../utils/ActivityDesc';
+import ActivityActions from '../common/ActivityActions';
+import ActivityDesc from '../common/ActivityDesc';
 import { Link } from 'react-router-dom';
 import CardMedia from '@material-ui/core/CardMedia';
+import { format } from 'date-fns'
 
 const actions = '#afadaa';
 const content = 'textSecondary';
@@ -96,7 +97,7 @@ function ActivityListItem({ activity }) {
                                 0 Interested · 0 Going
                             </Typography>
                             <Typography color={content}>
-                                {activity.date}
+                                {format(activity.date, 'dd MMM yyyy h:mm aa')}
                             </Typography>
                             <Typography color={content}>
                                 {activity.venue}

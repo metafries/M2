@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import Error from '../../components/toast/Error';
+import Error from '../../components/utils/ErrorToast';
 import { history } from '../..';
 import { stores } from '../store/config'
 

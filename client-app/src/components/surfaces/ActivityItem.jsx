@@ -6,12 +6,12 @@ import { useStore } from '../../app/store/config';
 import { observer } from 'mobx-react-lite';
 import { useParams } from 'react-router-dom';
 import LinearProgress from '@material-ui/core/LinearProgress';
-import ActivityTags from '../utils/ActivityTags'
-import ActivityHeader from '../utils/ActivityHeader';
-import ActivityMedia from '../utils/ActivityMedia';
-import ActivityInfo from '../utils/ActivityInfo';
-import ActivityActions from '../utils/ActivityActions';
-import ActivityDesc from '../utils/ActivityDesc';
+import ActivityTags from '../common/ActivityTags'
+import ActivityHeader from '../common/ActivityHeader';
+import ActivityMedia from '../common/ActivityMedia';
+import ActivityInfo from '../common/ActivityInfo';
+import ActivityActions from '../common/ActivityActions';
+import ActivityDesc from '../common/ActivityDesc';
 
 const useStyles = makeStyles((theme) =>
     createStyles({

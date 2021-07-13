@@ -6,6 +6,7 @@ import { Button } from '@material-ui/core';
 import { useStore } from '../../app/store/config';
 import { observer } from 'mobx-react-lite';
 import ActivityClout from '../paper/ActivityClout';
+import { format } from 'date-fns'
 
 const content = 'textSecondary';
 const CustomBtn = withStyles({
@@ -22,13 +23,13 @@ function ActivityInfo({ activity }) {
     return (
         <CardContent style={{ paddingTop: 0 }}>
             <Typography color={content}>
-                <CustomBtn onClick={() => setOpenActivityClout(true)}> 
+                <CustomBtn onClick={() => setOpenActivityClout(true)}>
                     0 Interested · 0 Going
                 </CustomBtn>
-                <ActivityClout/>
+                <ActivityClout />
             </Typography>
             <Typography color={content}>
-                {activity.date}
+                {format(activity.date, 'dd MMM yyyy h:mm aa')}
             </Typography>
             <Typography color={content}>
                 {activity.venue}
