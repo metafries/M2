@@ -10,9 +10,10 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { useStore } from '../../app/store/config';
 import { observer } from 'mobx-react-lite';
 import { Link, useHistory } from 'react-router-dom';
+import ActivityDeleteConfirm from '../modal/ActivityDeleteConfirm';
 
 function ActivityMenu({ menuStyle }) {
-    const { activityStore } = useStore();
+    const { commonStore, activityStore } = useStore();
     const { 
         submitting,
         deleteActivity,
@@ -66,9 +67,7 @@ function ActivityMenu({ menuStyle }) {
                     </ListItemIcon>
                     <Typography>Edit</Typography>
                 </MenuItem>
-                <MenuItem onClick={() => {
-                    handleDeleteActivity(selectedActivity.id)
-                }}>
+                <MenuItem onClick={() => commonStore.openModal(<ActivityDeleteConfirm/>)}>
                     <ListItemIcon style={{ minWidth: '40px' }}>
                         {
                             submitting 

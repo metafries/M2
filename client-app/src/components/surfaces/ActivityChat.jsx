@@ -54,8 +54,10 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 function ActivityChat() {
-  const { activityStore } = useStore();
-  const { loadActivity, loading } = activityStore;
+  const {
+    accountStore: { isLoggedIn, user },
+    activityStore: { loadActivity, loading },
+  } = useStore();
 
   const [activity, setActivity] = useState({
     id: '',
@@ -115,22 +117,25 @@ function ActivityChat() {
           ))}
         </List>
       </Container>
-      <div style={{ position: 'fixed', left: 0, width: '100%', bottom: 0, backgroundColor: '#ffffff' }}>
-        <Container maxWidth='sm'>
-          <List >
-            <ListItem style={{padding:0}} >
-              <ListItemAvatar >
-                <Avatar alt="Profile Picture" src='' />
-              </ListItemAvatar>
-              <FormControl fullWidth>
-                <FormHelperText>milan4wine</FormHelperText>
-                <Input autoFocus />
-              </FormControl>
-              <Button>Send</Button>
-            </ListItem>
-          </List>
-        </Container>
-      </div>
+      {
+        isLoggedIn &&
+        <div style={{ position: 'fixed', left: 0, width: '100%', bottom: 0, backgroundColor: '#ffffff' }}>
+          <Container maxWidth='sm'>
+            <List >
+              <ListItem style={{ padding: 0 }} >
+                <ListItemAvatar >
+                  <Avatar alt={user.username} src={user.image || '/'} />
+                </ListItemAvatar>
+                <FormControl fullWidth>
+                  <FormHelperText>{user.username}</FormHelperText>
+                  <Input autoFocus />
+                </FormControl>
+                <Button>Send</Button>
+              </ListItem>
+            </List>
+          </Container>
+        </div>
+      }
     </Dialog>
   );
 }

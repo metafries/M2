@@ -5,13 +5,14 @@ import { useField } from 'formik';
 export default function FormikTextInput({
     name,
     label,
+    type,
 }) {
     const [field, meta] = useField(name);
 
     return (
         <FormControl error={meta.touched && !!meta.error} >
             <FormHelperText> {label} </FormHelperText>
-            <Input {...field} />
+            <Input type={type} {...field} />
             {meta.touched && meta.error && (
                 <FormHelperText> {meta.error} </FormHelperText>
             )}

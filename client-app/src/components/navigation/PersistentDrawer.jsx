@@ -9,7 +9,7 @@ import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
@@ -23,12 +23,13 @@ import { Link } from 'react-router-dom';
 import SearchIcon from '@material-ui/icons/Search';
 import ActivitySearch from '../form/ActivitySearch';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
+import { Avatar } from '@material-ui/core';
 
 const drawerWidth = '100%';
 const bodyBg = '#1e1e1f';
 const appBarBg = '#ffff00';
 
-const logo = { height: '25px', width: 'auto' };
+const logo = { height: '24px', width: 'auto' };
 const tool = { fontSize: 30 };
 const closeDrawerBtn = { color: appBarBg, fontSize: 35 };
 const drawerOpts = { color: appBarBg };
@@ -96,13 +97,22 @@ const useStyles = makeStyles((theme) =>
             }),
             marginRight: 0,
         },
+        avatar: {
+            width: theme.spacing(3.4),
+            height: theme.spacing(3.4),
+        },
     }),
 );
 
 function PersistentDrawer() {
-    const { appStore, activityStore } = useStore();
-    const { openPersistentDrawer, setOpenPersistentDrawer } = appStore;
-    const { setOpenActivitySearch } = activityStore;
+    const {
+        accountStore: { isLoggedIn, user, logout },
+        appStore: { 
+            setOpenIdentityInputs, 
+            openPersistentDrawer, setOpenPersistentDrawer 
+        },
+        activityStore: { setOpenActivitySearch },
+    } = useStore();
 
     const classes = useStyles();
     const theme = useTheme();
@@ -137,16 +147,29 @@ function PersistentDrawer() {
                     >
                         <SearchIcon style={tool} />
                     </IconButton>
-                    <ActivitySearch/>
-                    <IconButton
-                        style={{ color: bodyBg }}
-                        aria-label="open drawer"
-                        edge="end"
-                        onClick={() => setOpenPersistentDrawer(true)}
-                        className={clsx(openPersistentDrawer && classes.hide)}
-                    >
-                        <MenuIcon style={tool} />
-                    </IconButton>
+                    <ActivitySearch />
+                    {
+                        isLoggedIn
+                            ?   <IconButton
+                                    style={{ color: bodyBg }}
+                                    edge="end"
+                                    onClick={() => setOpenPersistentDrawer(true)}
+                                    className={clsx(openPersistentDrawer && classes.hide)}
+                                >
+                                    <Avatar 
+                                        alt={user.username} 
+                                        src={user.image || '/'} 
+                                        className={classes.avatar} 
+                                    />
+                                </IconButton>
+                            :   <IconButton
+                                    style={{ color: bodyBg }}
+                                    edge="end"
+                                    onClick = {e => setOpenIdentityInputs(true)}
+                                >
+                                    <ExitToAppIcon style={tool} /> 
+                                </IconButton>
+                    }
                 </Toolbar>
             </AppBar>
             <Drawer
@@ -201,6 +224,16 @@ function PersistentDrawer() {
                     >
                         <ListItemIcon><ErrorOutlineIcon style={drawerOpts} /></ListItemIcon>
                         <ListItemText primary='BUG REPORT' />
+                    </ListItem>
+                </List>
+                <Divider style={divider} />
+                <List style={drawerOpts}>
+                    <ListItem
+                        onClick={() => {logout(); setOpenPersistentDrawer(false)}}
+                        button
+                    >
+                        <ListItemIcon><ExitToAppIcon style={drawerOpts} /></ListItemIcon>
+                        <ListItemText primary='LOG OUT' />
                     </ListItem>
                 </List>
             </Drawer>

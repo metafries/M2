@@ -11,6 +11,12 @@ const mockLatency = (delay) => {
     })
 }
 
+axios.interceptors.request.use(config => {
+    const token = stores.commonStore.token;
+    if (token) config.headers.Authorization = `Bearer ${token}`
+    return config;
+})
+
 axios.interceptors.response.use(async response => {
         await mockLatency(1000);
         return response;
@@ -78,7 +84,14 @@ const Activities = {
     delete: (id) => requests.delete(`/activities/${id}`),
 }
 
+ const Account = {
+      current: () => requests.get('/account'),
+      login: (user) => requests.post('/account/login', user),
+      register: (user) => requests.post('/account/register', user),
+ }
+
 const agent = {
+    Account,
     Activities
 }
 

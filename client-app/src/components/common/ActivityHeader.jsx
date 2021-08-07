@@ -13,6 +13,8 @@ const actions = '#afadaa';
 const useStyles = makeStyles((theme) =>
     createStyles({
         avatar: {
+            width: theme.spacing(4),
+            height: theme.spacing(4),
             backgroundColor: grey[700],
         },
     }),

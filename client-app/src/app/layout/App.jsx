@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
@@ -17,6 +17,9 @@ import { ToastContainer } from 'react-toastify';
 import './styles.css';
 import NotFound from '../../components/errors/NotFound';
 import Server from '../../components/errors/Server';
+import IdentityInputs from '../../components/form/IdentityInputs';
+import { useStore } from '../store/config';
+import ModalContainer from '../../components/paper/ModalContainer';
 
 const custom = createMuiTheme({
   palette: {
@@ -36,11 +39,24 @@ const custom = createMuiTheme({
 });
 
 function App() {
+  const { commonStore, accountStore } = useStore();
+
+  useEffect(() => {
+    if (commonStore.token) {
+      accountStore.getUser().finally(() => commonStore.setAppLoaded());
+    } else {
+      commonStore.setAppLoaded();
+    }
+  }, [commonStore, accountStore])
+
+  if (!commonStore.appLoaded) return <MuiThemeProvider theme={custom}><LandingPage/></MuiThemeProvider>
+
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
       <MuiThemeProvider theme={custom}>
         <CssBaseline />
         <ToastContainer position='bottom-right' closeButton={false} />
+        <ModalContainer />
         <Route exact path='/' component={LandingPage} />
         <Route
           path={'/(.+)'}
@@ -57,6 +73,7 @@ function App() {
                   <Route path='/server-error' component={Server}/>
                   <Route component={NotFound} />
                 </Switch>
+                <IdentityInputs/>
               </Container>
             </React.Fragment>
           )}
