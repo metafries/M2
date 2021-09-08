@@ -12,6 +12,7 @@ import ActivityMedia from '../common/ActivityMedia';
 import ActivityInfo from '../common/ActivityInfo';
 import ActivityActions from '../common/ActivityActions';
 import ActivityDesc from '../common/ActivityDesc';
+import ActivityMenu from '../navigation/ActivityMenu';
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -60,6 +61,7 @@ function ActivityItem() {
                 handleMenuClick={handleMenuClick}
                 handleSelectActivity={handleSelectActivity}
             />
+            <ActivityMenu />                        
             <ActivityInfo activity={activity} />
             <CardActions>
                 <ActivityActions

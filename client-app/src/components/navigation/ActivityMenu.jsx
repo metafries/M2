@@ -4,36 +4,37 @@ import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import BookmarkBorderIcon from '@material-ui/icons/BookmarkBorder';
 import Typography from '@material-ui/core/Typography';
-import EditIcon from '@material-ui/icons/Edit';
-import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import { useStore } from '../../app/store/config';
 import { observer } from 'mobx-react-lite';
-import { Link, useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import ActivityDeleteConfirm from '../modal/ActivityDeleteConfirm';
+import FlagOutlinedIcon from '@material-ui/icons/FlagOutlined';
+import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
+import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 
-function ActivityMenu({ menuStyle }) {
+function ActivityMenu() {
     const { commonStore, activityStore } = useStore();
-    const { 
-        submitting,
-        deleteActivity,
-        selectedActivity, 
-        anchorEl, 
-        handleMenuClose 
+    const {
+        selectedActivity,
+        anchorEl,
+        handleMenuClose
     } = activityStore;
 
-    const history = useHistory();
-
-    const handleDeleteActivity = async id => {
-        await deleteActivity(selectedActivity.id);
-        history.push('/activities');
-    }
+    const listItemIcon = { 
+        minWidth: '40px', 
+        color: 'whitesmoke',
+    };
 
     return (
         <React.Fragment>
             <Menu
                 PaperProps={{
-                    style: menuStyle,
+                    style: {
+                        color: 'whitesmoke',
+                        background: 'rgba(10,10,10,0.9)',
+                        boxShadow: 'none',
+                        borderRadius: 0,
+                    },
                 }}
                 elevation={0}
                 getContentAnchorEl={null}
@@ -51,32 +52,45 @@ function ActivityMenu({ menuStyle }) {
                 open={Boolean(anchorEl)}
                 onClose={handleMenuClose}
             >
-                <MenuItem onClick={() => {}}>
-                    <ListItemIcon style={{ minWidth: '40px' }}>
-                        <BookmarkBorderIcon style={{ color: 'whitesmoke' }} />
-                    </ListItemIcon>
-                    <Typography>Save</Typography>
-                </MenuItem>
-                <MenuItem 
-                    component={Link} 
-                    to = {selectedActivity && `/edit/${selectedActivity.id}`}
-                    onClick={() => {}}
-                >
-                    <ListItemIcon style={{ minWidth: '40px' }}>
-                        <EditIcon style={{ color: 'whitesmoke' }} />
-                    </ListItemIcon>
-                    <Typography>Edit</Typography>
-                </MenuItem>
-                <MenuItem onClick={() => commonStore.openModal(<ActivityDeleteConfirm/>)}>
-                    <ListItemIcon style={{ minWidth: '40px' }}>
-                        {
-                            submitting 
-                                ? <CircularProgress size={20} /> 
-                                : <DeleteForeverIcon style={{ color: 'whitesmoke' }} />
-                        }
-                    </ListItemIcon>
-                    <Typography>Delete</Typography>
-                </MenuItem>
+                {
+                    selectedActivity && !selectedActivity.isHost &&
+                    <MenuItem>
+                        <ListItemIcon style={listItemIcon}>
+                            <BookmarkBorderIcon/>
+                        </ListItemIcon>
+                        <Typography>Save</Typography>
+                    </MenuItem>
+                }
+                {
+                    selectedActivity && !selectedActivity.isHost &&
+                    <MenuItem>
+                        <ListItemIcon style={listItemIcon}>
+                            <FlagOutlinedIcon/>
+                        </ListItemIcon>
+                        <Typography>Report</Typography>
+                    </MenuItem>
+                }
+                {
+                    selectedActivity && selectedActivity.isHost &&
+                    <MenuItem
+                        component={Link}
+                        to={selectedActivity && `/edit/${selectedActivity.id}`}
+                    >
+                        <ListItemIcon style={listItemIcon}>
+                            <EditOutlinedIcon/>
+                        </ListItemIcon>
+                        <Typography>Edit</Typography>
+                    </MenuItem>
+                }
+                {
+                    selectedActivity && selectedActivity.isHost &&
+                    <MenuItem onClick={() => commonStore.openModal(<ActivityDeleteConfirm/>)}>
+                        <ListItemIcon style={listItemIcon}>
+                            <DeleteOutlineIcon/>
+                        </ListItemIcon>
+                        <Typography>Delete</Typography>
+                    </MenuItem>
+                }
             </Menu>
         </React.Fragment>
     )

@@ -16,6 +16,7 @@ import ActivityDesc from '../common/ActivityDesc';
 import { Link } from 'react-router-dom';
 import CardMedia from '@material-ui/core/CardMedia';
 import { format } from 'date-fns'
+import ActivityStatus from '../common/ActivityStatus';
 
 const actions = '#afadaa';
 const content = 'textSecondary';
@@ -93,14 +94,12 @@ function ActivityListItem({ activity }) {
                     />
                     <div className={classes.overlay}>
                         <div style={{ position: 'absolute', bottom: '16px' }}>
+                        <ActivityStatus activity={activity} />
                             <Typography color={content}>
-                                0 Interested · 0 Going
+                                {`-- Interested · ${activity.attendees.length} Going`}
                             </Typography>
                             <Typography color={content}>
                                 {format(activity.date, 'dd MMM yyyy h:mm aa')}
-                            </Typography>
-                            <Typography color={content}>
-                                {activity.venue}
                             </Typography>
                         </div>
                     </div>

@@ -5,6 +5,7 @@ import { useStore } from '../../app/store/config';
 import { observer } from 'mobx-react-lite';
 import ActivityListItem from '../surfaces/ActivityListItem';
 import ActivityClout from './ActivityClout';
+import ActivityMenu from '../navigation/ActivityMenu';
 
 const useProgressStyles = makeStyles((theme) => ({
     root: {
@@ -42,6 +43,7 @@ function ActivityList() {
                     </React.Fragment>
             ))}
             <ActivityClout/>
+            <ActivityMenu />
         </React.Fragment>
     );
 }

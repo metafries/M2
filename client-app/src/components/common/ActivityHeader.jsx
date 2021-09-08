@@ -6,7 +6,6 @@ import AvatarGroup from '@material-ui/lab/AvatarGroup';
 import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import ActivityMenu from '../navigation/ActivityMenu';
 
 const actions = '#afadaa';
 
@@ -34,8 +33,8 @@ export default function ActivityHeader({
                 avatar={
                     <AvatarGroup max={2}>
                         <Avatar 
-                            alt="MILAN4WINE" 
-                            src="/" 
+                            alt={activity.host.displayName} 
+                            src={activity.host.image || '/'}
                             className={classes.avatar} 
                         />
                     </AvatarGroup>
@@ -54,9 +53,8 @@ export default function ActivityHeader({
                 }
                 titleTypographyProps={{ variant: 'h6' }}
                 title={activity.title}
-                subheader={`milan4wine · ${activity.city}`}
+                subheader={`${activity.hostUsername} · ${activity.city}`}
             />
-            <ActivityMenu menuStyle={menuStyle} />
         </React.Fragment>
     )
 }

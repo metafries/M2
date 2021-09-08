@@ -76,7 +76,15 @@ function ActivityInputs() {
     if (id) {
       setCloseRoute(`/activities/${id}`);
       loadActivity(id).then(activity => {
-        setActivity(activity);
+        setActivity({
+          id: activity.id,
+          title: activity.title,
+          category: activity.category,
+          description: activity.description,
+          date: activity.date,
+          city: activity.city,
+          venue: activity.venue,
+        });
       })
     } else {
       setCloseRoute('/activities');

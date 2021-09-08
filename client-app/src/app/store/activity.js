@@ -1,5 +1,6 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import agent from "../api/agent";
+import { stores } from "./config";
 
 
 export default class Activity {
@@ -78,7 +79,13 @@ export default class Activity {
     }
 
     processData = activity => {
+        const user = stores.accountStore.user;
+        const username = user ? user.username : null;        
+        activity.isGoing = activity.attendees.some(a => a.username === username);
+        activity.isHost = activity.hostUsername === username;
+        activity.host = activity.attendees.find(x => x.username === activity.hostUsername);
         activity.date = new Date(activity.date);
+        this.activityRegistry.set(activity.id, activity);
     }
 
     getActivity = id => {
@@ -90,18 +97,17 @@ export default class Activity {
     }
     
     createActivity = async activity => {
+        const user = stores.accountStore.user;
         this.submitting = true;
         try {
             await agent.Activities.create(activity);
-            runInAction(() => {
-                this.activityRegistry.set(activity.id, activity);
-                this.submitting = false;
-            })
+            activity.hostUsername = user.username;
+            activity.attendees.push(user);
+            this.processData(activity);
         } catch(error) {
             console.log(error);
-            runInAction(() => {
-                this.submitting = false;
-            })
+        } finally {
+            runInAction(() => this.submitting = false);
         }
     }
 
@@ -118,18 +124,60 @@ export default class Activity {
     }
 
     updateActivity = async activity => {
+        const target = activity.id;
         this.submitting = true;
         try {
             await agent.Activities.update(activity);
             runInAction(() => {
-                this.activityRegistry.set(activity.id, activity);
-                this.submitting = false;
+                let updatedActivity = {...this.getActivity(target), ...activity}
+                this.activityRegistry.set(target, updatedActivity);                
             })
         } catch(error) {
             console.log(error);
+        } finally {
+            runInAction(() => this.submitting = false);
+        }
+    }
+
+    updateAttendance = async () => {
+        const user = stores.accountStore.user;
+        const activity = this.selectedActivity;        
+        this.submitting = true;                
+        try {
+            await agent.Activities.attend(activity.id);
             runInAction(() => {
-                this.submitting = false;
+                if (activity.isGoing) {
+                    activity.attendees = activity.attendees.filter(
+                        a => a.username !== user.username
+                    );
+                    activity.isGoing = false;
+                } else {
+                    activity.attendees.push(user);
+                    activity.isGoing = true;
+                }
+                this.activityRegistry.set(activity.id, activity);
             })
+        } catch (error) {
+            console.log(error);
+        } finally {
+            runInAction(() => this.submitting = false);
+        }
+    }
+
+    cancelActivity = async () => {
+        const target = this.selectedActivity;
+        this.submitting = true;
+        try {
+            await agent.Activities.attend(target.id);
+            runInAction(() => {
+                target.isCancelled = !target.isCancelled;
+                this.activityRegistry.set(target.id, target);
+            })
+            this.processData(target);
+        } catch (error) {
+            console.log(error);
+        } finally {
+            runInAction(() => this.submitting = false);
         }
     }
 

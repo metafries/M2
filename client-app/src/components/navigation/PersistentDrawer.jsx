@@ -16,23 +16,25 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import PostAddIcon from '@material-ui/icons/PostAdd';
-import ViewListIcon from '@material-ui/icons/ViewList';
 import { useStore } from '../../app/store/config';
 import { observer } from 'mobx-react-lite';
 import { Link } from 'react-router-dom';
 import SearchIcon from '@material-ui/icons/Search';
 import ActivitySearch from '../form/ActivitySearch';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
-import { Avatar } from '@material-ui/core';
+import { Avatar, Badge } from '@material-ui/core';
+import NotificationsNoneSharpIcon from '@material-ui/icons/NotificationsNoneSharp';
+import ChatOutlinedIcon from '@material-ui/icons/ChatOutlined';
+import ThumbUpAltOutlinedIcon from '@material-ui/icons/ThumbUpAltOutlined';
 
-const drawerWidth = '100%';
-const bodyBg = '#1e1e1f';
-const appBarBg = '#ffff00';
+const drawerWidth = 'auto';
+const appBarBg = 'transparent';
 
+const iconBtn = { color: '#ffff00ad' };
 const logo = { height: '24px', width: 'auto' };
 const tool = { fontSize: 30 };
-const closeDrawerBtn = { color: appBarBg, fontSize: 35 };
-const drawerOpts = { color: appBarBg };
+const closeDrawerBtn = { color: '#ffff00', fontSize: 35 };
+const drawerOpts = { color: '#ffff00' };
 const divider = { height: '3px' };
 
 const useStyles = makeStyles((theme) =>
@@ -46,6 +48,7 @@ const useStyles = makeStyles((theme) =>
         },
         appBar: {
             background: appBarBg,
+            backdropFilter: 'blur(20px)',
             transition: theme.transitions.create(['margin', 'width'], {
                 easing: theme.transitions.easing.sharp,
                 duration: theme.transitions.duration.leavingScreen,
@@ -70,7 +73,7 @@ const useStyles = makeStyles((theme) =>
             flexShrink: 0,
         },
         drawerPaper: {
-            background: 'rgba(124,124,0,0.9)',
+            background: '#2b2c2deb',
             width: drawerWidth,
         },
         drawerHeader: {
@@ -100,6 +103,7 @@ const useStyles = makeStyles((theme) =>
         avatar: {
             width: theme.spacing(3.4),
             height: theme.spacing(3.4),
+            background: '#ffff00ad',
         },
     }),
 );
@@ -107,9 +111,9 @@ const useStyles = makeStyles((theme) =>
 function PersistentDrawer() {
     const {
         accountStore: { isLoggedIn, user, logout },
-        appStore: { 
-            setOpenIdentityInputs, 
-            openPersistentDrawer, setOpenPersistentDrawer 
+        appStore: {
+            setOpenIdentityInputs,
+            openPersistentDrawer, setOpenPersistentDrawer
         },
         activityStore: { setOpenActivitySearch },
     } = useStore();
@@ -132,7 +136,7 @@ function PersistentDrawer() {
                         noWrap
                         className={classes.title}
                     >
-                        <IconButton 
+                        <IconButton
                             component={Link}
                             to='/'
                             style={{ padding: 0 }}
@@ -141,34 +145,36 @@ function PersistentDrawer() {
                             <img alt='metaFries' style={logo} src='/assets/logoText.png' />
                         </IconButton>
                     </Typography>
-                    <IconButton 
+                    <IconButton
                         onClick={() => setOpenActivitySearch(true)}
-                        style={{ color: bodyBg }}
+                        style={iconBtn}
                     >
                         <SearchIcon style={tool} />
                     </IconButton>
                     <ActivitySearch />
                     {
                         isLoggedIn
-                            ?   <IconButton
-                                    style={{ color: bodyBg }}
-                                    edge="end"
-                                    onClick={() => setOpenPersistentDrawer(true)}
-                                    className={clsx(openPersistentDrawer && classes.hide)}
-                                >
-                                    <Avatar 
-                                        alt={user.username} 
-                                        src={user.image || '/'} 
-                                        className={classes.avatar} 
+                            ? <IconButton
+                                style={iconBtn}
+                                edge="end"
+                                onClick={() => setOpenPersistentDrawer(true)}
+                                className={clsx(openPersistentDrawer && classes.hide)}
+                            >
+                                <Badge color="secondary" variant='dot'>
+                                    <Avatar
+                                        alt={user.displayName}
+                                        src={user.image || '/'}
+                                        className={classes.avatar}
                                     />
-                                </IconButton>
-                            :   <IconButton
-                                    style={{ color: bodyBg }}
-                                    edge="end"
-                                    onClick = {e => setOpenIdentityInputs(true)}
-                                >
-                                    <ExitToAppIcon style={tool} /> 
-                                </IconButton>
+                                </Badge>
+                            </IconButton>
+                            : <IconButton
+                                style={iconBtn}
+                                edge="end"
+                                onClick={e => setOpenIdentityInputs(true)}
+                            >
+                                <ExitToAppIcon style={tool} />
+                            </IconButton>
                     }
                 </Toolbar>
             </AppBar>
@@ -192,22 +198,36 @@ function PersistentDrawer() {
                 </div>
                 <Divider style={divider} />
                 <List style={drawerOpts}>
-                    <ListItem 
-                        button 
-                        onClick={() => setOpenPersistentDrawer(false)}
-                        component={Link} 
-                        to='/activities'
+                    <ListItem
+                        button
+                        component={Link}
                     >
-                        <ListItemIcon><ViewListIcon style={drawerOpts} /></ListItemIcon>
-                        <ListItemText primary='DISCOVER ACTIVITIES' />
+                        <ListItemIcon>
+                            <Badge color="secondary" badgeContent={10} max={9}>
+                                <NotificationsNoneSharpIcon style={drawerOpts} />
+                            </Badge>
+                        </ListItemIcon>
+                        <ListItemText primary='NOTIFICATIONS' />
                     </ListItem>
                 </List>
                 <Divider style={divider} />
                 <List style={drawerOpts}>
-                    <ListItem 
+                    <ListItem
+                        button
+                        onClick={() => setOpenPersistentDrawer(false)}
+                        component={Link}
+                        to='/activities'
+                    >
+                        <ListItemIcon><ThumbUpAltOutlinedIcon style={drawerOpts} /></ListItemIcon>
+                        <ListItemText primary='RECOMMEND ACTIVITIES' />
+                    </ListItem>
+                </List>
+                <Divider style={divider} />
+                <List style={drawerOpts}>
+                    <ListItem
                         component={Link}
                         to='/create'
-                        onClick={() => {}}
+                        onClick={() => { }}
                         button
                     >
                         <ListItemIcon><PostAddIcon style={drawerOpts} /></ListItemIcon>
@@ -216,7 +236,23 @@ function PersistentDrawer() {
                 </List>
                 <Divider style={divider} />
                 <List style={drawerOpts}>
-                    <ListItem 
+                    <ListItem
+                        button
+                        component={Link}
+                    >
+                        <ListItemIcon>
+                            <Badge color="secondary" badgeContent={10} max={9}>
+                                <ChatOutlinedIcon style={drawerOpts} />
+
+                            </Badge>
+
+                        </ListItemIcon>
+                        <ListItemText primary='MESSAGES' />
+                    </ListItem>
+                </List>
+                <Divider style={divider} />
+                <List style={drawerOpts}>
+                    <ListItem
                         component={Link}
                         to='/test/errors'
                         onClick={() => setOpenPersistentDrawer(false)}
@@ -229,7 +265,7 @@ function PersistentDrawer() {
                 <Divider style={divider} />
                 <List style={drawerOpts}>
                     <ListItem
-                        onClick={() => {logout(); setOpenPersistentDrawer(false)}}
+                        onClick={() => { logout(); setOpenPersistentDrawer(false) }}
                         button
                     >
                         <ListItemIcon><ExitToAppIcon style={drawerOpts} /></ListItemIcon>
@@ -238,7 +274,6 @@ function PersistentDrawer() {
                 </List>
             </Drawer>
         </div>
-
     )
 }
 

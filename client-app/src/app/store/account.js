@@ -21,6 +21,7 @@ export default class Account {
             runInAction(() => this.user = user);
             
             stores.appStore.setOpenIdentityInputs(false);
+            stores.activityStore.loadActivities();
         } catch (error) {
             throw error;
         }
@@ -30,6 +31,7 @@ export default class Account {
         stores.commonStore.setToken(null);
         window.localStorage.removeItem('jwt');
         this.user = null;
+        stores.activityStore.loadActivities();
         history.push('/');
     }
 

@@ -64,11 +64,11 @@ function a11yProps(index) {
     };
 }
 
-function ActivityClout() {
+function ActivityClout({ activity }) {
     const { activityStore } = useStore();
     const { openActivityClout, setOpenActivityClout } = activityStore;
 
-    const [value, setValue] = React.useState(0);
+    const [value, setValue] = React.useState(1);
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
@@ -77,22 +77,26 @@ function ActivityClout() {
 
     return (
         <React.Fragment>
-            <Dialog
-                fullScreen
-                scroll='paper'
-                PaperProps={{
-                    style: {
-                        borderRadius: 0,
-                        color: 'whitesmoke',
-                        background: '#2b2c2d',
-                    }
-                }}
-                open={openActivityClout}
-                onClose={() => setOpenActivityClout(false)}
-                TransitionComponent={Transition}
-            >                
-                <AppBar className={classes.appBar}>
-                    <Toolbar>
+            {
+                activity && activity.attendees &&
+                <Dialog
+                    fullScreen
+                    scroll='paper'
+                    PaperProps={{
+                        style: {
+                            borderRadius: 0,
+                            color: 'whitesmoke',
+                            backdropFilter: 'blur(20px)',
+                            background: '#0000001a',
+                
+                        }
+                    }}
+                    open={openActivityClout}
+                    onClose={() => setOpenActivityClout(false)}
+                    TransitionComponent={Transition}
+                >
+                    <AppBar className={classes.appBar}>
+                        <Toolbar>
                             <IconButton
                                 style={{ float: 'right' }}
                                 edge="start"
@@ -108,31 +112,36 @@ function ActivityClout() {
                                 onChange={handleChange}
                             >
                                 <Tab label={`${mockData.interested.length} Interested`} {...a11yProps(0)} />
-                                <Tab label={`${mockData.going.length} Going`} {...a11yProps(1)} />
+                                <Tab label={`${activity.attendees.length} Going`} {...a11yProps(1)} />
                             </Tabs>
-                    </Toolbar>
-                </AppBar>
-                <Container style={{ marginTop: '68px' }} maxWidth='sm'>
-                    <DialogContent style={{ padding: 0 }}>
-                        <TabPanel value={value} index={0}>
-                            <List>
-                                {mockData.interested.map(user =>
+                        </Toolbar>
+                    </AppBar>
+                    <Container style={{ marginTop: '68px' }} maxWidth='sm'>
+                        <DialogContent style={{ padding: 0 }}>
+                            <TabPanel value={value} index={0}>
+                                <List>
+                                    {mockData.interested.map(user =>
                                         <ActivityCloutItem key={user.id} user={user} />
-                                )}
-                            </List>
-                        </TabPanel>
-                    </DialogContent>
-                    <DialogContent style={{ padding: 0 }}>
-                        <TabPanel value={value} index={1}>
-                            <List>
-                                {mockData.going.map(user =>
-                                        <ActivityCloutItem key={user.id} user={user} />
-                                )}
-                            </List>
-                        </TabPanel>
-                    </DialogContent>
-                </Container>
-            </Dialog>
+                                    )}
+                                </List>
+                            </TabPanel>
+                        </DialogContent>
+                        <DialogContent style={{ padding: 0 }}>
+                            <TabPanel value={value} index={1}>
+                                <List>
+                                    {activity.attendees.map(user =>
+                                        <ActivityCloutItem 
+                                            key={user.username} 
+                                            user={user} 
+                                            hostUsername={activity.hostUsername} 
+                                        />
+                                    )}
+                                </List>
+                            </TabPanel>
+                        </DialogContent>
+                    </Container>
+                </Dialog>
+            }
         </React.Fragment>
     );
 }
