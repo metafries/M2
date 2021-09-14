@@ -18,10 +18,9 @@ const useStyles = makeStyles((theme) => ({
     paper: {
       position: 'absolute',
       width: 'auto',
-      backgroundColor: '#16161680',
-      backdropFilter: 'blur(10px)',
-      border: '1px solid #323232',
-      boxShadow: '0px 0px 1px 1px #000',
+      backdropFilter: 'blur(20px)',
+      border: '1px solid #16161680',
+      boxShadow: '0px 2px 4px -1px rgb(0 0 0 / 20%), 0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%)',
       padding: theme.spacing(2, 1, 0, 1),
     },
 }));

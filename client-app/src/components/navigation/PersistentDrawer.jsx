@@ -31,8 +31,8 @@ const drawerWidth = 'auto';
 const appBarBg = 'transparent';
 
 const iconBtn = { color: '#ffff00ad' };
-const logo = { height: '24px', width: 'auto' };
-const tool = { fontSize: 30 };
+const logo = { height: '24px' };
+const tool = { fontSize: 28 };
 const closeDrawerBtn = { color: '#ffff00', fontSize: 35 };
 const drawerOpts = { color: '#ffff00' };
 const divider = { height: '3px' };
@@ -101,8 +101,8 @@ const useStyles = makeStyles((theme) =>
             marginRight: 0,
         },
         avatar: {
-            width: theme.spacing(3.4),
-            height: theme.spacing(3.4),
+            width: theme.spacing(3.19),
+            height: theme.spacing(3.19),
             background: '#ffff00ad',
         },
     }),
@@ -141,8 +141,7 @@ function PersistentDrawer() {
                             to='/'
                             style={{ padding: 0 }}
                         >
-                            <img alt='icon' style={logo} src='/assets/logoIcon.png' />
-                            <img alt='metaFries' style={logo} src='/assets/logoText.png' />
+                            <img alt='metaphy' style={logo} src='/assets/metaphy100.png' />
                         </IconButton>
                     </Typography>
                     <IconButton

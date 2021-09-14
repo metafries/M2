@@ -24,8 +24,9 @@ export default function LandingPage() {
                 to='/activities'
                 style={{ padding: 0 }}
             >
-                <img alt='icon' style={logo} src='/assets/logoIcon.png' />
-                <img alt='metaFries' style={logo} src='/assets/logoText.png' />
+                
+                <img alt='metaphy' style={logo} src='/assets/metaphy100.png' />
+
             </IconButton>
             <Typography variant='h5' style={{ color: 'whitesmoke' }}>
                 Gather up in no time!

@@ -24,6 +24,7 @@ import Input from '@material-ui/core/Input';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { LinearProgress } from '@material-ui/core';
 import mockData from '../../app/api/mockData';
+import ActivityDeleteConfirm from '../modal/ActivityDeleteConfirm';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -55,6 +56,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 function ActivityChat() {
   const {
+    commonStore,
     accountStore: { isLoggedIn, user },
     activityStore: { loadActivity, loading },
   } = useStore();
@@ -130,7 +132,7 @@ function ActivityChat() {
                   <FormHelperText>{user.username}</FormHelperText>
                   <Input autoFocus />
                 </FormControl>
-                <Button>Send</Button>
+                <Button onClick={() => commonStore.openModal(<ActivityDeleteConfirm/>)}>Send</Button>
               </ListItem>
             </List>
           </Container>
