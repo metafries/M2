@@ -1,10 +1,8 @@
-## M2
+## <img src='client-app/public/assets/metaphy100.png' style='height: 35px; width: auto' />
 
+M2
 A social networking simulation built on .NET 5..<br/>
 [React] [MUI] [MobX] [.NET] [SQLite]
-
-.<br/>
-<img src='client-app/public/assets/metaphy100.png' style='height: 35px; width: auto' />
 
 ► Built single-page apps on React.<br/>
 ► Styled with Material-UI library..<br/>
